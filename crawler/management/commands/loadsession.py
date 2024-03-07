@@ -11,7 +11,11 @@ except ModuleNotFoundError:
 
 
 
+'''
+    Referenced in here : https://instaloader.github.io/troubleshooting.html
+    loading session from firefox database to instaloader 
 
+'''
 
 class Command(BaseCommand):
     help = (
@@ -20,24 +24,15 @@ class Command(BaseCommand):
 
 
     def handle(self, *args, **options):
-
-        p = ArgumentParser()
-        p.add_argument("-c", "--cookiefile")
-        p.add_argument("-f", "--sessionfile")
-        args = p.parse_args()
+        session_file = None
         try:
-            import_session(get_cookie_file(), args.sessionfile)
+            import_session(cookie_file=get_cookie_file(), session_file=session_file)
         except (ConnectionException, OperationalError) as e:
             raise SystemExit("Cookie import failed: {}".format(e))
 
         self.stdout.write(
             self.style.SUCCESS(
-                'Vector Database successfully created in {}'.format(
-                    os.getenv('CHROMA_PERSIST_DIRECTORY')
-                )
-                + '\nNow the {} collection is accessible'.format(
-                    os.getenv('COLLECTION_NAME')
-                )
+                'session successfully loaded and saved in instaloader env vars!'
             )
         )
 
