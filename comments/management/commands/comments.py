@@ -14,6 +14,10 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('-p', '--post', type=str, help='url of the post')
+        parser.add_argument(
+            '-n', '--number', default=5, type=int, help='number of posts'
+        )
+        parser.add_argument('-a', '--account', type=str, help='account page username')
 
     @staticmethod
     def get_post_id_from_url(url):
@@ -30,9 +34,15 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         post_url = options['post']
-        post_id = self.get_post_id_from_url(post_url)
-        print(environ.get('INSTAGRAM_SESSION_USERNAME'))
+        account = options['account']
+        number_of_post = options['number']
+        if account is not None:
+            self.nth_latest_post_of(username=account, number_of_post=number_of_post)
+        if post_url is not None:
+            self.get_comments_by_url(post_url=post_url)
 
+    def get_comments_by_url(self, post_url):
+        post_id = self.get_post_id_from_url(post_url)
         try:
             loader = Instaloader()
             loader.load_session_from_file(environ.get('INSTAGRAM_SESSION_USERNAME'))
@@ -52,3 +62,24 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS('Comments saved successfully.'))
         except ConnectionException as e:
             raise ConnectionError(f'Connection error: {e}')
+
+    # TODO : Pined Post not handled !
+    def nth_latest_post_of(self, username, number_of_post):
+        loader = Instaloader()
+        loader.load_session_from_file(environ.get('INSTAGRAM_SESSION_USERNAME'))
+        profile = instaloader.Profile.from_username(loader.context, username=username)
+        posts = profile.get_posts()
+        for post in posts:
+            for comment in post.get_comments():
+                Comment.objects.create(
+                    id=comment.id,
+                    username=comment.owner.username,
+                    created=comment.created_at_utc,
+                    text=comment.text,
+                    likes=comment.likes_count,
+                    answers=self.get_answers(comment),
+                    post_id=post.url,
+                )
+            number_of_post -= 1
+            if number_of_post == 0:
+                break

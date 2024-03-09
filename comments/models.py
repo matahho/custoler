@@ -11,3 +11,6 @@ class Comment(models.Model):
     likes = models.IntegerField(default=0)
     answers = models.JSONField()
     post_id = models.CharField(max_length=255, default=None)
+
+    def __str__(self):
+        return str(self.text[0:100])
