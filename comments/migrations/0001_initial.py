@@ -10,14 +10,14 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="Comment",
+            name='Comment',
             fields=[
-                ("id", models.BigIntegerField(primary_key=True, serialize=False)),
-                ("created", models.DateTimeField()),
-                ("username", models.CharField(max_length=255)),
-                ("text", models.TextField()),
-                ("likes", models.IntegerField(default=0)),
-                ("answers", models.JSONField()),
+                ('id', models.BigIntegerField(primary_key=True, serialize=False)),
+                ('created', models.DateTimeField()),
+                ('username', models.CharField(max_length=255)),
+                ('text', models.TextField()),
+                ('likes', models.IntegerField(default=0)),
+                ('answers', models.JSONField()),
             ],
         ),
     ]

@@ -2,16 +2,15 @@ from django.core.management.base import BaseCommand
 from comments.models import Comment
 import instaloader
 from os import environ
+
 try:
     from instaloader import ConnectionException, Instaloader
 except ModuleNotFoundError:
-    raise SystemExit("Instaloader not found.\n  pip install [--user] instaloader")
+    raise SystemExit('Instaloader not found.\n  pip install [--user] instaloader')
 
 
 class Command(BaseCommand):
-    help = (
-        'Save all commands from a post '
-    )
+    help = 'Save all commands from a post '
 
     def add_arguments(self, parser):
         parser.add_argument('-p', '--post', type=str, help='url of the post')
@@ -28,7 +27,6 @@ class Command(BaseCommand):
         for answer in comment.answers:
             answers[answer.owner.username] = answer.text
         return answers
-
 
     def handle(self, *args, **options):
         post_url = options['post']
@@ -48,20 +46,9 @@ class Command(BaseCommand):
                     text=comment.text,
                     likes=comment.likes_count,
                     answers=self.get_answers(comment),
-                    post_id=post_id
+                    post_id=post_id,
                 )
 
             self.stdout.write(self.style.SUCCESS('Comments saved successfully.'))
         except ConnectionException as e:
-            raise ConnectionError(f"Connection error: {e}")
-
-
-
-
-
-
-
-
-
-
-
+            raise ConnectionError(f'Connection error: {e}')
