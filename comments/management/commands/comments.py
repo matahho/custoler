@@ -80,6 +80,7 @@ class Command(BaseCommand):
                     answers=self.get_answers(comment),
                     post_id=post.url,
                 )
+            self.stdout.write(self.style.SUCCESS(f'Comments saved on post :{post.url}'))
             number_of_post -= 1
             if number_of_post == 0:
                 break
